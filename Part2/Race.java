@@ -11,9 +11,7 @@ import java.lang.Math;
 public class Race
 {
     private int raceLength;
-    private Horse lane1Horse;
-    private Horse lane2Horse;
-    private Horse lane3Horse;
+    Horse[] Horses;
 
     /**
      * Constructor for objects of class Race
@@ -21,39 +19,11 @@ public class Race
      * 
      * @param distance the length of the racetrack (in metres/yards...)
      */
-    public Race(int distance)
+    public Race(int distance, Horse[] Horses)
     {
         // initialise instance variables
         raceLength = distance;
-        lane1Horse = null;
-        lane2Horse = null;
-        lane3Horse = null;
-    }
-    
-    /**
-     * Adds a horse to the race in a given lane
-     * 
-     * @param theHorse the horse to be added to the race
-     * @param laneNumber the lane that the horse will be added to
-     */
-    public void addHorse(Horse theHorse, int laneNumber)
-    {
-        if (laneNumber == 1)
-        {
-            lane1Horse = theHorse;
-        }
-        else if (laneNumber == 2)
-        {
-            lane2Horse = theHorse;
-        }
-        else if (laneNumber == 3)
-        {
-            lane3Horse = theHorse;
-        }
-        else
-        {
-            System.out.println("Cannot add horse to lane " + laneNumber + " because there is no such lane");
-        }
+        this.Horses = Horses;
     }
     
     /**
@@ -62,40 +32,34 @@ public class Race
      * then repeatedly moved forward until the 
      * race is finished
      */
-    public void startRace()
+    public void startRaceGUI()
     {
         //declare a local variable to tell us when the race is finished
         boolean finished = false;
 
-        Horse horse1 = new Horse('\u2658', "Bob", 0.9);
-        Horse horse2 = new Horse('\u2658', "James", 0.9);
-        Horse horse3 = new Horse('\u2658', "Jim", 0.9);
-
-        addHorse(horse1, 1);
-        addHorse(horse2, 2);
-        addHorse(horse3, 3);
+        
         
         //reset all the lanes (all horses not fallen and back to 0). 
-        lane1Horse.goBackToStart();
-        lane2Horse.goBackToStart();
-        lane3Horse.goBackToStart();
-                      
+        for(int i = 0; i < Horses.length; i++) {
+            Horses[i].goBackToStart();
+        }
         while (!finished)
         {
             //move each horse
-            moveHorse(lane1Horse);
-            moveHorse(lane2Horse);
-            moveHorse(lane3Horse);
+            for(int i = 0; i < Horses.length; i++) {
+                moveHorse(Horses[i]);
+            }
                         
             //print the race positions
             printRace();
             
             //if any of the three horses has won the race is finished
-            if ( raceWonBy(lane1Horse) || raceWonBy(lane2Horse) || raceWonBy(lane3Horse) )
-            {
-                finished = true;
-            } else if( lane1Horse.hasFallen() && lane2Horse.hasFallen() && lane3Horse.hasFallen() ) {
-                System.out.println("No Winner");
+            for(int i = 0; i < Horses.length; i++) {
+                if(raceWonBy(Horses[i])) {
+                    finished = true;
+                }
+            }
+            if(AllFallen(Horses)) {
                 finished = true;
             }
            
@@ -164,15 +128,11 @@ public class Race
         
         multiplePrint('=',raceLength+3); //top edge of track
         System.out.println();
-        
-        printLane(lane1Horse);
-        System.out.println();
-        
-        printLane(lane2Horse);
-        System.out.println();
-        
-        printLane(lane3Horse);
-        System.out.println();
+
+        for(int i = 0; i < Horses.length; i++) {
+            printLane(Horses[i]);
+            System.out.println();
+        }
         
         multiplePrint('=',raceLength+3); //bottom edge of track
         System.out.println();    
@@ -201,6 +161,7 @@ public class Race
         //else print the horse's symbol
         if(theHorse.hasFallen())
         {
+            //System.out.print('\u2322');
             System.out.print('\u2717');
         }
         else
@@ -232,5 +193,14 @@ public class Race
             System.out.print(aChar);
             i = i + 1;
         }
+    }
+
+    public boolean AllFallen(Horse[] Horses) {
+        for(int i = 0; i < Horses.length; i++) {
+            if(!Horses[i].hasFallen()) {
+                return false;
+            }
+        }
+        return true;
     }
 }
